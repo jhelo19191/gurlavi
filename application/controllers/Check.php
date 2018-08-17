@@ -20,6 +20,7 @@ class Check extends Base
         if($count_flag_zero==0)
         {
             $this->BaseModel->updateStatus($sales_order_id,2,5,2);
+            $this->BaseModel->insertBornDate($sales_order_id,'remittance');
             $this->CheckModel->updateSalesOrderStatus($sales_order_id);
             $data['result'] = 'success';
             $data['message'] = 'Record successfully saved.';
@@ -194,15 +195,15 @@ class Check extends Base
             foreach($response->result() as $cash)
             {
                 $table_data[] = array(
-                                        'payment_type' => 'Cash',
-                                        'payment_type_id' => 1,
+                                        'payment_type' => ($cash->transaction_type=='cash'? 'Cash' : 'Cash Deposit'),
+                                        'payment_type_id' => ($cash->transaction_type=='cash'? 1 : 4),
                                         'amount' => $cash->amount,
                                         'payment_id' => $cash->cash_id,
                                         'payment_date' => $cash->payment_date,
                                         'payment_code' => 'N/A',
                                         'flag' => $cash->flag,
                                         'image_path' => $cash->image_path,
-                                        'created_date' => strtotime($cash->created_date)
+                                        'created_date' => $cash->created_date
                                     );
             }
         endif;
@@ -226,7 +227,7 @@ class Check extends Base
                                         'payment_code' => $cash->approval_code,
                                         'flag' => $cash->flag,
                                         'image_path' => $cash->image_path,
-                                        'created_date' => strtotime($cash->created_date)
+                                        'created_date' => $cash->created_date
                                     );
             }
         endif;
@@ -242,15 +243,15 @@ class Check extends Base
             foreach($response->result() as $cash)
             {
                 $table_data[] = array(
-                                        'payment_type' => 'PDC',
-                                        'payment_type_id' => 2,
+                                        'payment_type' => ($cash->transaction_type=='pdc'? 'PDC' : 'PDC Deposit'),
+                                        'payment_type_id' => ($cash->transaction_type=='pdc'? 2 : 5),
                                         'payment_id' => $cash->pdc_id,
                                         'amount' => $cash->amount,
                                         'payment_date' => $cash->cheque_date,
                                         'payment_code' => $cash->check_no,
                                         'flag' => $cash->flag,
                                         'image_path' => $cash->image_path,
-                                        'created_date' => strtotime($cash->created_date)
+                                        'created_date' => $cash->created_date
                                     );
             }
         endif;
